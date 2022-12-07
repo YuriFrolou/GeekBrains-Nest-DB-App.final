@@ -7,9 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UsersEntity } from '../../users/entities/users.entity';
-import { CategoriesEntity } from '../categories/entities/category.entity';
-import { CommentsEntity } from '../comments/entities/comments.entity';
+import { UsersEntity } from './users.entity';
+import { CategoriesEntity } from './category.entity';
+import { CommentsEntity } from './comments.entity';
 
 @Entity('news')
   export class NewsEntity {

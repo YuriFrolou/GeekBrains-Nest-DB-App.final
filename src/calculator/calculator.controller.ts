@@ -2,7 +2,7 @@ import {Body, Controller, Get, Param, Patch, Put, Query, Req, Res} from '@nestjs
 import {CalculatorService} from "./calculator.service";
 import Request from "express";
 import {ApiHeader, ApiHeaders, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {CalcDataDto} from "../news/dto/calc-data.dto";
+import {CalcDataDto} from "../dto/calc-data.dto";
 import {ApiImplicitParam} from "@nestjs/swagger/dist/decorators/api-implicit-param.decorator";
 import {ApiImplicitHeader} from "@nestjs/swagger/dist/decorators/api-implicit-header.decorator";
 

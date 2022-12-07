@@ -1,10 +1,10 @@
 import {HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateNewsDto} from './dto/create-news.dto';
-import { UpdateNewsDto } from './dto/update-news.dto';
+import { CreateNewsDto} from '../dto/create-news.dto';
+import { UpdateNewsDto } from '../dto/update-news.dto';
 import { MailService } from '../mail/mail.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NewsEntity } from './entities/news.entity';
+import { NewsEntity } from '../entities/news.entity';
 import { UsersService } from '../users/users.service';
 import { CategoriesService } from './categories/categories.service';
 
@@ -63,14 +63,14 @@ export class NewsService {
       where: {
         id,
       },
-      relations: ['comments','user'],
-      join: {
-        alias: 'news',
-        leftJoinAndSelect: {
-          comments: 'news.comments',
-          user:'news.user'
-        },
-      },
+      relations: ['comments','user','comments.user'],
+      // join: {
+      //   alias: 'news',
+      //   leftJoinAndSelect: {
+      //     comments: 'news.comments',
+      //     user:'news.user'
+      //   },
+      // },
     });
 
     if (!news) {

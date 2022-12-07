@@ -1,0 +1,118 @@
+{{#if user}}
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+
+                    <div class="card-body text-center">
+                        <img src="{{{ternOperator user.cover 'https://termosfera.su/wp-content/uploads/2022/04/2816616767_vubrbej.jpg'}}}"
+                             alt="avatar"
+                             class="rounded-circle img-fluid">
+                        <h5 class="my-3">{{user.lastName}} {{user.firstName}}</h5>
+                        <p class="text-muted mb-4">{{user.email}}</p>
+                    </div>
+                </div>
+            </div>
+            <form class="col-lg-8" name="form" action="http://localhost:3000/users" target="dummyframe" method="PATCH" enctype="multipart/form-data">
+                <div class="card mb-4">
+                    <div class="card-body">
+                    <input  type="hidden" name="tokenForm" value="{{lastToken user.sessions}}"/>
+                        <div class="row">
+                            <label class="col-sm-3" for="firstname">
+                                <p class="mb-1">Firstname</p>
+                            </label>
+                            <div class="col-sm-9">
+                                <input name="firstName" class="form-control mb-3" placeholder="firstname" id="firstname"/>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <label class="col-sm-3" for="lastname">
+                                <p class="mb-1">Lastname</p>
+                            </label>
+                            <div class="col-sm-9">
+                                <input name="lastName" class="form-control mb-3" placeholder="lastname" id="lastname"/>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <label class="col-sm-3" for="email">
+                                <p class="mb-1">Email</p>
+                            </label>
+                            <div class="col-sm-9">
+                                <input type="email" name="email" class="form-control mb-3" placeholder="email" id="email"/>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <label class="col-sm-3" for="password">
+                                <p class="mb-1">Password</p>
+                            </label>
+                            <div class="col-sm-9">
+                                <input name="password" class="form-control mb-3" placeholder="password" id="password"/>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <label class="col-sm-3" for="picture">
+                                <p class="mb-1">Изменить аватар</p>
+                            </label>
+                            <div class="col-sm-9">
+                                <input type="file" name="cover" class="form-control-file mb-3" id="picture"/>
+                            </div>
+                        </div>
+                        <hr>
+                        <button class="btn btn-primary btn-lg btn-block" type="submit" id="getData">Send</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{{else}}
+<h1>Пользователь не найден!</h1>
+{{/if}}
+
+ <script>
+    const form=document.forms.form;
+    const token=form.elements.tokenForm.value;
+
+    form.onsubmit =async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const request = new XMLHttpRequest()
+    request.open("PATCH", form.action,true)
+    request.setRequestHeader('Access-Control-Allow-Origin', 'origin');
+    request.setRequestHeader('Authorization', token);
+    request.withCredentials = true
+
+    request.onload = function() {
+     if (this.status !==200) {
+        alert( 'ошибка: ' + (this.status ? this.statusText : 'запрос не удался') );
+        form.reset();
+        return;
+     }else{
+        alert("Данные успешно изменены");
+        window.location.reload();
+     }
+    }
+
+    if(form.elements.firstName.value===""&&form.elements.lastName.value===""&&form.elements.email.value===""&&form.elements.password.value===""&&form.elements.cover.value===""){
+        alert('Вы ничего не выбрали для изменения профиля');
+    }else{
+        request.send(fd)
+    }
+  };
+
+ </script>
+
+
+
+
+
+
+
+
+
+

@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryDto } from '../../dto/create-category.dto';
+import { UpdateCategoryDto } from '../../dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from '../../users/entities/users.entity';
+import { UsersEntity } from '../../entities/users.entity';
 import { Repository } from 'typeorm';
-import { CategoriesEntity } from './entities/category.entity';
+import { CategoriesEntity } from '../../entities/category.entity';
 
 @Injectable()
 export class CategoriesService {

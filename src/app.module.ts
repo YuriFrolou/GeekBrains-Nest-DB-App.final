@@ -9,13 +9,18 @@ import { MailModule } from './mail/mail.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { CommentsEntity } from './news/comments/entities/comments.entity';
-import { NewsEntity } from './news/entities/news.entity';
-import { UsersEntity } from './users/entities/users.entity';
-import { CategoriesEntity } from './news/categories/entities/category.entity';
+import { CommentsEntity } from './entities/comments.entity';
+import { NewsEntity } from './entities/news.entity';
+import { UsersEntity } from './entities/users.entity';
+import { CategoriesEntity } from './entities/category.entity';
 import { CommentsModule } from './news/comments/comments.module';
 import { CategoriesModule } from './news/categories/categories.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './auth/role/roles.guard';
+import { SessionEntity } from './entities/session.entity';
 
+// @ts-ignore
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,14 +36,18 @@ import { CategoriesModule } from './news/categories/categories.module';
       logging: true,
       migrationsRun: true,
       synchronize: true,
-      entities: [UsersEntity,NewsEntity,CommentsEntity,CategoriesEntity],
+      entities: [UsersEntity,NewsEntity,CommentsEntity,CategoriesEntity,SessionEntity],
     }),
     UsersModule,MailModule,NewsModule,CategoriesModule,CommentsModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-    })],
+    }),
+    AuthModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,{
+    provide: APP_GUARD, useClass: RolesGuard,
+  },
+  ],
 })
 export class AppModule {
 }

@@ -8,16 +8,18 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
-  Render,
+  Render, UseGuards,
 } from '@nestjs/common';
 import { NewsService } from './news.service';
-import { CreateNewsDto } from './dto/create-news.dto';
-import { UpdateNewsDto } from './dto/update-news.dto';
+import { CreateNewsDto } from '../dto/create-news.dto';
+import { UpdateNewsDto } from '../dto/update-news.dto';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { HelperFileLoad } from '../utils/HelperFileLoad';
-import { NewsEntity } from './entities/news.entity';
+import { NewsEntity } from '../entities/news.entity';
+import { LocalAuthGuard } from '../auth/local-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 
 const PATH_NEWS = '/static/';
@@ -28,6 +30,7 @@ export class NewsController {
   constructor(private readonly newsService: NewsService) {
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiTags('news')
   @ApiBody({ type: CreateNewsDto })
@@ -42,7 +45,7 @@ export class NewsController {
       filename: HelperFileLoad.customFileName,
     }),
   }))
-  async create(@Body() createNewsDto: CreateNewsDto, @UploadedFile()cover: Express.Multer.File):Promise<NewsEntity> {
+  async create(@Body() createNewsDto: CreateNewsDto, @UploadedFile() cover: Express.Multer.File): Promise<NewsEntity> {
     if (cover?.filename) {
       createNewsDto.cover = PATH_NEWS + cover.filename;
     }
@@ -57,13 +60,13 @@ export class NewsController {
     description: 'render all news',
   })
   @Render('news-list')
-  async renderAllNews():Promise<Object> {
+  async renderAllNews(): Promise<Object> {
     const news = await this.newsService.findAll();
     return {
       news: news,
-      seo:{
+      seo: {
         title: 'Список новостей',
-        description: 'Самые крутые новости'
+        description: 'Самые крутые новости',
       },
     };
   }
@@ -76,13 +79,13 @@ export class NewsController {
     description: 'render all news by user',
   })
   @Render('news-list')
-  async findAllByUser(@Param('userId')userId: number):Promise<Object> {
+  async findAllByUser(@Param('userId') userId: number): Promise<Object> {
     const news = await this.newsService.findAllByUser(userId);
     return {
       news: news,
-      seo:{
+      seo: {
         title: 'Список новостей',
-        description: 'Самые крутые новости'
+        description: 'Самые крутые новости',
       },
     };
   }
@@ -95,27 +98,27 @@ export class NewsController {
     description: 'render news by id',
   })
   @Render('news-detail')
-  async renderOneNews(@Param('id')id: number):Promise<Object> {
+  async renderOneNews(@Param('id') id: number): Promise<Object> {
     const news = await this.newsService.findOneById(id);
     return {
       news: {
         ...news,
       },
-      seo:{
+      seo: {
         title: 'Детальная страница новости',
-        description: 'Самая крутая новость'
+        description: 'Самая крутая новость',
       },
     };
-     }
+  }
 
   @Get()
   @ApiTags('news')
   @ApiResponse({
     status: 200,
     description: 'get all news',
-    type: [NewsEntity]
+    type: [NewsEntity],
   })
-  async findAll():Promise<NewsEntity[]> {
+  async findAll(): Promise<NewsEntity[]> {
     return await this.newsService.findAll();
   }
 
@@ -126,7 +129,7 @@ export class NewsController {
     description: 'get news by id',
     type: NewsEntity,
   })
-  async findOne(@Param('id') id: number):Promise<NewsEntity> {
+  async findOne(@Param('id') id: number): Promise<NewsEntity> {
     return await this.newsService.findOneById(id);
   }
 
@@ -136,10 +139,10 @@ export class NewsController {
   @ApiResponse({
     status: 200,
     description: 'update news',
-    type:NewsEntity
+    type: NewsEntity,
   })
-  async update(@Param('id') id: number, @Body() updateNewsDto: UpdateNewsDto):Promise<NewsEntity> {
-    return this.newsService.update(id, updateNewsDto)
+  async update(@Param('id') id: number, @Body() updateNewsDto: UpdateNewsDto): Promise<NewsEntity> {
+    return this.newsService.update(id, updateNewsDto);
   }
 
   @Delete(':id')
@@ -147,9 +150,9 @@ export class NewsController {
   @ApiResponse({
     status: 200,
     description: 'delete news by id',
-    type:[NewsEntity]
+    type: [NewsEntity],
   })
- async remove(@Param('id') id: number):Promise<NewsEntity[]> {
+  async remove(@Param('id') id: number): Promise<NewsEntity[]> {
     return await this.newsService.remove(id);
   }
 }

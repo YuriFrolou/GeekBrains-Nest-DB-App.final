@@ -1,6 +1,6 @@
 import { IsArray, IsInt, IsNumberString, IsOptional, IsString } from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
-import { CreateCommentDto } from '../comments/dto/create-comment.dto';
+import { CreateCommentDto } from './create-comment.dto';
 
 export class CreateNewsDto {
 
