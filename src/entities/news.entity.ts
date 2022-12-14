@@ -10,11 +10,22 @@ import {
 import { UsersEntity } from './users.entity';
 import { CategoriesEntity } from './category.entity';
 import { CommentsEntity } from './comments.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('news')
   export class NewsEntity {
+
+  @ApiProperty({
+    example:1,
+    description:'Идентификатор новости'
+  })
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ApiProperty({
+    example:'Новая новость',
+    description:'Заголовок новости'
+  })
   @Column('text')
   title: string;
   @Column('text')

@@ -35,11 +35,15 @@ export class AuthService {
     session.token = `Bearer ${accessToken}`;
     session.user = user;
     await this.sessionsRepository.save(session);
-    return{ accessToken };
+    return{ accessToken,id:user.id};
   }
 
   async verify(token: string) {
     return this.jwtService.verify(token);
+  }
+
+  async decode(token: string) {
+    return this.jwtService.decode(token);
   }
 
 }

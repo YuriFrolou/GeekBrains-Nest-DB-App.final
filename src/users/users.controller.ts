@@ -13,7 +13,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersEntity } from '../entities/users.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -25,13 +25,15 @@ import {Request}from "express";
 const PATH_NEWS = '/static/';
 HelperFileLoad.path = PATH_NEWS;
 
+@ApiBearerAuth()
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {
   }
 
   @Post()
-  @ApiTags('users')
+  @ApiOperation({summary:'Create user'})
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
     status: 201,
@@ -55,7 +57,6 @@ export class UsersController {
   }
 
   @Get('/login')
-  @ApiTags('users')
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
     status: 201,
@@ -66,7 +67,6 @@ export class UsersController {
   }
 
   @Get('/update/:id')
-  @ApiTags('users')
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
     status: 200,
@@ -81,7 +81,6 @@ export class UsersController {
   }
 
   @Get()
-  @ApiTags('users')
   @ApiResponse({
     status: 200,
     description: 'get all users',
@@ -92,7 +91,6 @@ export class UsersController {
   }
 
   @Get(':id')
-  @ApiTags('users')
   @ApiResponse({
     status: 200,
     description: 'get user by id',
@@ -106,7 +104,6 @@ export class UsersController {
 
   @Patch()
   @UseGuards(JwtAuthGuard)
-  @ApiTags('users')
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
     status: 200,
@@ -133,7 +130,6 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ApiTags('users')
   @ApiResponse({
     status: 200,
     description: 'delete user',
@@ -145,7 +141,6 @@ export class UsersController {
 
 
   @Post('/role/:id')
-  @ApiTags('users')
   @ApiResponse({
     status: 201,
     description: 'set user role',

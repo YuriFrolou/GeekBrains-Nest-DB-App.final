@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { NewsService } from '../news.service';
 import { CommentsEntity } from '../../entities/comments.entity';
 import { UsersService } from '../../users/users.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 
 @Injectable()
@@ -16,12 +17,14 @@ export class CommentsService {
               @Inject(forwardRef(() => NewsService))
               private readonly newsService: NewsService,
               private readonly usersService: UsersService,
+              private readonly eventEmitter: EventEmitter2
+
   ) {
   }
 
-  async create(createCommentDto: CreateCommentDto):Promise<CommentsEntity> {
-    const _news = await this.newsService.findOneById(createCommentDto.newsId);
-    const _user = await this.usersService.getUserById(createCommentDto.userId);
+  async create(newsId:number,message:string,userId:number):Promise<CommentsEntity> {
+    const _news = await this.newsService.findOneById(newsId);
+    const _user = await this.usersService.getUserById(userId);
 
     if (!_user) {
       throw new HttpException(
@@ -35,10 +38,9 @@ export class CommentsService {
     }
 
     const comment = new CommentsEntity();
-    comment.message = createCommentDto.message;
+    comment.message = message;
     comment.createdAt = new Date();
     comment.updatedAt = new Date();
-    comment.cover = createCommentDto.cover;
     comment.user = _user;
     comment.news = _news;
 
@@ -54,6 +56,7 @@ export class CommentsService {
           id: newsId,
         },
       },
+      relations: ['user'],
     });
   }
 
@@ -74,31 +77,40 @@ export class CommentsService {
     });
   }
 
-  async findOne(newsId: number, commentId: number):Promise<CommentsEntity>  {
-    const news = await this.newsService.findOneById(newsId);
-    const comment = await this.commentRepository.findOneBy({id:commentId});
-    if (!news || !comment) {
+  async findOne(id: number):Promise<CommentsEntity>  {
+    const comment = await this.commentRepository.findOne({ where:{id} ,
+      relations: ['news','user']
+    });
+    if (!comment) {
       throw new NotFoundException();
     }
 
     return comment;
   }
 
-  async update(newsId: number, commentId: number, updateCommentDto: UpdateCommentDto):Promise<CommentsEntity>  {
-    const comment=await this.findOne(newsId,commentId);
+  async update(commentId: number, message:string):Promise<CommentsEntity>  {
+    let _comment=await this.findOne(commentId);
     const updatedComment = {
-      ...comment,
-      message: updateCommentDto.message ? updateCommentDto.message : comment.message,
+      ..._comment,
+      message: message ? message : _comment.message,
       updatedAt: new Date()
     };
-    await this.commentRepository.save(updatedComment);
+    _comment=await this.commentRepository.save(updatedComment);
+    this.eventEmitter.emit('comment.update', {
+      commentId: _comment.id,
+      newsId: _comment.news.id,
+      comment:_comment
+    });
     return this.commentRepository.findOneBy({id:commentId})
   }
 
 
-  async remove(newsId: number, commentId: number):Promise<CommentsEntity[]> {
-    const comment=await this.findOne(newsId,commentId);
-    await this.commentRepository.remove(comment);
-    return await this.findAll(newsId);
+  async remove(commentId: number):Promise<CommentsEntity> {
+    const comment=await this.findOne(commentId);
+
+    this.eventEmitter.emit('comment.remove', { commentId: comment.id,
+      newsId: comment.news.id,
+    });
+    return await this.commentRepository.remove(comment);
   }
 }

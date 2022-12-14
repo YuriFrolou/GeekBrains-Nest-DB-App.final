@@ -9,13 +9,15 @@ import { NewsModule } from '../news.module';
 import { NewsService } from '../news.service';
 import { UsersModule } from '../../users/users.module';
 import { UsersService } from '../../users/users.service';
+import { SocketCommentsGateway } from './socket-comments.gateway';
+import { AuthModule } from '../../auth/auth.module';
 
 @Module({
-  imports: [forwardRef(() => NewsModule),UsersModule,
+  imports: [forwardRef(() => NewsModule),UsersModule,AuthModule,
     TypeOrmModule.forFeature([CommentsEntity])
   ],
   controllers: [CommentsController],
-  providers: [CommentsService],
+  providers: [CommentsService,SocketCommentsGateway],
   exports:[CommentsService]
 })
 export class CommentsModule {}
