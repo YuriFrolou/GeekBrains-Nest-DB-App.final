@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { UsersEntity } from '../../../users/entities/users.entity';
+import { UsersEntity } from './users.entity';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsOptional, IsString } from 'class-validator';
-import { NewsEntity } from '../../entities/news.entity';
+import { NewsEntity } from './news.entity';
 
 @Entity('comments')
 export class CommentsEntity {

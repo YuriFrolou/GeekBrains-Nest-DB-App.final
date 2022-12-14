@@ -12,12 +12,12 @@ import {
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CreateCommentDto } from '../../dto/create-comment.dto';
+import { UpdateCommentDto } from '../../dto/update-comment.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { HelperFileLoad } from '../../utils/HelperFileLoad';
-import { CommentsEntity } from './entities/comments.entity';
+import { CommentsEntity } from '../../entities/comments.entity';
 
 const PATH_NEWS = '/static/';
 HelperFileLoad.path = PATH_NEWS;

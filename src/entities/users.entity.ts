@@ -1,6 +1,9 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { NewsEntity } from '../../news/entities/news.entity';
-import { CommentsEntity } from '../../news/comments/entities/comments.entity';
+import { NewsEntity } from './news.entity';
+import { CommentsEntity } from './comments.entity';
+import { IsEnum } from 'class-validator';
+import { Role } from '../auth/role/role.enum';
+import { SessionEntity } from './session.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -17,7 +20,14 @@ export class UsersEntity {
   email: string;
 
   @Column('text')
-  role: string;
+  password:string
+
+  @Column('text', { nullable: true })
+  cover: string;
+
+  @Column('text')
+  @IsEnum(Role)
+  roles: Role;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
@@ -30,4 +40,7 @@ export class UsersEntity {
 
   @OneToMany(() => CommentsEntity, (comments) => comments.user)
   comments: CommentsEntity[];
+
+  @OneToMany(() => SessionEntity, (sessions) => sessions.user)
+  sessions: SessionEntity[];
 }

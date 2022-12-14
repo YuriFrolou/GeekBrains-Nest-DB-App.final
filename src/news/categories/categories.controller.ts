@@ -1,17 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryDto } from '../../dto/create-category.dto';
+import { UpdateCategoryDto } from '../../dto/update-category.dto';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UpdateCommentDto } from '../comments/dto/update-comment.dto';
-import { CommentsEntity } from '../comments/entities/comments.entity';
-import { CategoriesEntity } from './entities/category.entity';
+import { UpdateCommentDto } from '../../dto/update-comment.dto';
+import { CommentsEntity } from '../../entities/comments.entity';
+import { CategoriesEntity } from '../../entities/category.entity';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { Roles } from '../../auth/role/roles.decorator';
+import { Role } from '../../auth/role/role.enum';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  // @UseGuards(JwtAuthGuard)
+  // @Roles(Role.Admin)
   @ApiTags('categories')
   @ApiBody({ type: CreateCategoryDto })
   @ApiResponse({

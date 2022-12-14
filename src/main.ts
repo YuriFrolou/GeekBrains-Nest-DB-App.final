@@ -55,6 +55,10 @@ async function bootstrap() {
         return `${path}/${param1}/${param2}`;
     });
 
+    hbsHelper.registerHelper("lastToken", function(array) {
+        return array[array.length-1].token;
+    });
+
     app.setViewEngine('hbs');
     await app.listen(process.env.PORT ||3000);
 }
