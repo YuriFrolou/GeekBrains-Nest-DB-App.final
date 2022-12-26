@@ -18,9 +18,8 @@ import { UsersEntity } from '../entities/users.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { HelperFileLoad } from '../utils/HelperFileLoad';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {Request}from "express";
+import { LoginUserDto } from '../dto/login-user.dto';
 
 const PATH_NEWS = '/static/';
 HelperFileLoad.path = PATH_NEWS;
@@ -46,7 +45,7 @@ export class UsersController {
       filename: HelperFileLoad.customFileName,
     }),
   }))
-  async createUser(@Body() createUserDto: CreateUserDto, @UploadedFile() cover: Express.Multer.File): Promise<UsersEntity> {
+  async createUser(@Body() createUserDto: CreateUserDto, @UploadedFile() cover: Express.Multer.File=null): Promise<UsersEntity> {
     if (cover?.filename) {
       createUserDto.cover = PATH_NEWS + cover.filename;
     } else {
@@ -57,9 +56,10 @@ export class UsersController {
   }
 
   @Get('/login')
-  @ApiBody({ type: CreateUserDto })
+  @ApiOperation({summary:'Login in browser'})
+  @ApiBody({ type: LoginUserDto })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'login in browser',
   })
   @Render('user-login')
@@ -67,7 +67,8 @@ export class UsersController {
   }
 
   @Get('/update/:id')
-  @ApiBody({ type: CreateUserDto })
+  @ApiOperation({summary:'Update profile in browser'})
+  @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
     status: 200,
     description: 'update profile in browser',
@@ -81,6 +82,7 @@ export class UsersController {
   }
 
   @Get()
+  @ApiOperation({summary:'Get all users'})
   @ApiResponse({
     status: 200,
     description: 'get all users',
@@ -91,6 +93,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @ApiOperation({summary:'Get user by id'})
   @ApiResponse({
     status: 200,
     description: 'get user by id',
@@ -103,6 +106,7 @@ export class UsersController {
 
 
   @Patch()
+  @ApiOperation({summary:'Update user'})
   @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
@@ -110,13 +114,17 @@ export class UsersController {
     description: 'update user',
     type: UsersEntity,
   })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden'
+  })
   @UseInterceptors(FileInterceptor('cover', {
     storage: diskStorage({
       destination: HelperFileLoad.destinationPath,
       filename: HelperFileLoad.customFileName,
     }),
   }))
-  async updateUser(@Req() request, @Body() updateUserDto: UpdateUserDto,@UploadedFile() cover: Express.Multer.File): Promise<UsersEntity> {
+  async updateUser(@Req() request, @Body() updateUserDto: UpdateUserDto,@UploadedFile() cover: Express.Multer.File=null): Promise<UsersEntity> {
    const userId=request.user.userId;
 
    if(!userId){
@@ -130,6 +138,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiOperation({summary:'Delete user'})
   @ApiResponse({
     status: 200,
     description: 'delete user',
@@ -141,6 +150,7 @@ export class UsersController {
 
 
   @Post('/role/:id')
+  @ApiOperation({summary:'Set user role'})
   @ApiResponse({
     status: 201,
     description: 'set user role',

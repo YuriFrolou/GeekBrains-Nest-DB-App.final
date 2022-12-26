@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { NewsModule } from './news/news.module';
 import { CalculatorModule } from './calculator/calculator.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path' ;
+import { join } from 'path';
 import { MailModule } from './mail/mail.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -20,6 +20,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/role/roles.guard';
 import { SessionEntity } from './entities/session.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AuthService } from './auth/auth.service';
 
 // @ts-ignore
 @Module({
@@ -37,19 +38,34 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       logging: true,
       migrationsRun: true,
       synchronize: true,
-      entities: [UsersEntity,NewsEntity,CommentsEntity,CategoriesEntity,SessionEntity],
+      entities: [
+        UsersEntity,
+        NewsEntity,
+        CommentsEntity,
+        CategoriesEntity,
+        SessionEntity,
+      ],
     }),
-    UsersModule,MailModule,NewsModule,CategoriesModule,CommentsModule,
+    UsersModule,
+    MailModule,
+    NewsModule,
+    CategoriesModule,
+    CommentsModule,
+    AuthModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
-    AuthModule,EventEmitterModule.forRoot()
+
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService,{
-    provide: APP_GUARD, useClass: RolesGuard,
-  },
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
+  exports:[AppService]
 })
-export class AppModule {
-}
+export class AppModule {}

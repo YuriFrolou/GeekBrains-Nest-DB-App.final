@@ -28,18 +28,42 @@ import { ApiProperty } from '@nestjs/swagger';
   })
   @Column('text')
   title: string;
+
+  @ApiProperty({
+    example:"Это описание новости",
+    description:'Описание новости'
+  })
   @Column('text')
   description: string;
+
+  @ApiProperty({
+    example:"https://termosfera.su/wp-content/uploads/2022/04/2816616767_vubrbej.jpg",
+    description:'Обложка новости'
+  })
   @Column('text', { nullable: true })
   cover: string;
+
+  @ApiProperty({
+    description:'Дата создания новости'
+  })
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
+
+  @ApiProperty({
+    description:'Дата обновления новости'
+  })
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  // @ApiProperty({description:'Связь с таблицей пользователей многие-к-одному'})
   @ManyToOne(() => UsersEntity, (user) => user.news)
-  user: UsersEntity;
+  user?: UsersEntity;
+
+  // @ApiProperty({description:'Связь с таблицей категорий многие-к-одному'})
   @ManyToOne(() => CategoriesEntity, (category) => category.news)
-  category: CategoriesEntity;
+  category?: CategoriesEntity;
+
+  // @ApiProperty({description:'Связь с таблицей комментариев один-ко-многим'})
   @OneToMany(() => CommentsEntity, (comments) => comments.news)
-  comments: CommentsEntity[];
+  comments?: CommentsEntity[];
 }

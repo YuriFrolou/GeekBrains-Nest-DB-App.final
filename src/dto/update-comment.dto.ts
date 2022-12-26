@@ -1,9 +1,9 @@
 import {IsString} from "class-validator";
-import {ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateCommentDto {
 
-  @ApiPropertyOptional({type: String})
+  @ApiPropertyOptional({ example: 'Новый комментарий', description: 'Новый текст комментария' })
   @IsString({
     message: 'Поле message должно быть строкой'
   })

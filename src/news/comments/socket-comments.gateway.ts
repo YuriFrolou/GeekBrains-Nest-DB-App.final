@@ -45,7 +45,7 @@ export class SocketCommentsGateway
     const userId: number = client.data.user.sub;
     const _comment = await this.commentsService.findOne(+idComment);
     if(_comment&&_comment.user.id===userId||_comment.user.roles==='admin'){
-      await this.commentsService.remove(+idComment);
+      await this.commentsService.remove(+idComment,+userId);
       this.server.to(idNews.toString()).emit('removeComment', { id: idComment });
     }
   }

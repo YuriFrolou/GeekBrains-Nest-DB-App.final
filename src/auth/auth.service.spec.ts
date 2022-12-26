@@ -1,18 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UsersEntity } from '../entities/users.entity';
 
 describe('AuthService', () => {
-  let service: AuthService;
+  let authService: AuthService;
+  const mockAuthService = {}
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AuthService],
-    }).compile();
+    }).overrideProvider(AuthService).useValue(mockAuthService).compile();
 
-    service = module.get<AuthService>(AuthService);
+    authService = module.get<AuthService>(AuthService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(authService).toBeDefined();
   });
 });

@@ -2,13 +2,12 @@ import { IsArray, IsInt, IsNotEmpty, IsNumberString, IsOptional, IsString } from
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
 
 export class CreateCommentDto {
-
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({example:1,description:'Идентификатор комментария'})
     @IsInt()
     @IsOptional()
     id?: number;
 
-    @ApiProperty({type: String})
+    @ApiProperty({example:"Комментарий",description:'Содержание комментария'})
     @IsString({
         message: 'Поле message должно быть строкой'
     })
@@ -20,12 +19,12 @@ export class CreateCommentDto {
     @IsOptional()
     cover?: string;
 
-    @ApiPropertyOptional()
+    @ApiProperty({example:'3',description:'Уникальный идентификатор новости - внешний ключ'})
     @IsNumberString()
     @IsOptional()
     newsId: number;
 
-    @ApiProperty()
+    @ApiProperty({example:'2',description:'Уникальный идентификатор пользователя - внешний ключ'})
     @IsNumberString()
     userId: number;
 }

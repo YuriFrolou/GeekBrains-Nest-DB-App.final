@@ -1,6 +1,4 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCommentDto } from '../../dto/create-comment.dto';
-import { UpdateCommentDto } from '../../dto/update-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NewsService } from '../news.service';
@@ -105,12 +103,19 @@ export class CommentsService {
   }
 
 
-  async remove(commentId: number):Promise<CommentsEntity> {
-    const comment=await this.findOne(commentId);
-
-    this.eventEmitter.emit('comment.remove', { commentId: comment.id,
-      newsId: comment.news.id,
-    });
-    return await this.commentRepository.remove(comment);
+  async remove(commentId: number,userId:number):Promise<CommentsEntity[]> {
+    const _comment=await this.findOne(commentId);
+    const _user=await this.usersService.getUserById(userId);
+    if(_comment.user.id==userId||_user.roles==='admin'){
+      this.eventEmitter.emit('comment.remove', { commentId: _comment.id,
+        newsId: _comment.news.id,
+      });
+      await this.commentRepository.remove(_comment);
+      return await this.commentRepository.find();
+    } else{
+      throw new HttpException(
+        'Нет прав для операции', HttpStatus.FORBIDDEN,
+      );
+    }
   }
 }

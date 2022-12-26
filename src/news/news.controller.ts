@@ -13,18 +13,20 @@ import {
 import { NewsService } from './news.service';
 import { CreateNewsDto } from '../dto/create-news.dto';
 import { UpdateNewsDto } from '../dto/update-news.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { HelperFileLoad } from '../utils/HelperFileLoad';
 import { NewsEntity } from '../entities/news.entity';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 
 const PATH_NEWS = '/static/';
 HelperFileLoad.path = PATH_NEWS;
 
+
+@ApiBearerAuth()
+@ApiTags('news')
 @Controller('news')
 export class NewsController {
   constructor(private readonly newsService: NewsService) {
@@ -32,7 +34,7 @@ export class NewsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  @ApiTags('news')
+  @ApiOperation({summary:'Create news'})
   @ApiBody({ type: CreateNewsDto })
   @ApiResponse({
     status: 201,
@@ -45,7 +47,7 @@ export class NewsController {
       filename: HelperFileLoad.customFileName,
     }),
   }))
-  async create(@Body() createNewsDto: CreateNewsDto, @UploadedFile() cover: Express.Multer.File): Promise<NewsEntity> {
+  async create(@Body() createNewsDto: CreateNewsDto, @UploadedFile() cover: Express.Multer.File=null): Promise<NewsEntity> {
     if (cover?.filename) {
       createNewsDto.cover = PATH_NEWS + cover.filename;
     }
@@ -54,7 +56,7 @@ export class NewsController {
 
 
   @Get('all')
-  @ApiTags('news')
+  @ApiOperation({summary:'Render all news'})
   @ApiResponse({
     status: 200,
     description: 'render all news',
@@ -73,7 +75,7 @@ export class NewsController {
 
 
   @Get('all/:userId')
-  @ApiTags('news')
+  @ApiOperation({summary:'Render all news by user'})
   @ApiResponse({
     status: 200,
     description: 'render all news by user',
@@ -92,7 +94,7 @@ export class NewsController {
 
 
   @Get('/detail/:id')
-  @ApiTags('news')
+  @ApiOperation({summary:'Render news by id'})
   @ApiResponse({
     status: 200,
     description: 'render news by id',
@@ -112,7 +114,7 @@ export class NewsController {
   }
 
   @Get()
-  @ApiTags('news')
+  @ApiOperation({summary:'Get all news'})
   @ApiResponse({
     status: 200,
     description: 'get all news',
@@ -123,7 +125,7 @@ export class NewsController {
   }
 
   @Get(':id')
-  @ApiTags('news')
+  @ApiOperation({summary:'Get news by id'})
   @ApiResponse({
     status: 200,
     description: 'get news by id',
@@ -134,7 +136,7 @@ export class NewsController {
   }
 
   @Patch(':id')
-  @ApiTags('news')
+  @ApiOperation({summary:'Update news'})
   @ApiBody({ type: UpdateNewsDto })
   @ApiResponse({
     status: 200,
@@ -146,7 +148,7 @@ export class NewsController {
   }
 
   @Delete(':id')
-  @ApiTags('news')
+  @ApiOperation({summary:'Delete news'})
   @ApiResponse({
     status: 200,
     description: 'delete news by id',

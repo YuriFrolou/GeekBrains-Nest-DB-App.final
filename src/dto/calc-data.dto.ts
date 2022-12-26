@@ -2,11 +2,11 @@ import {IsNumberString} from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
 
 export class CalcDataDto {
-    @ApiProperty()
+    @ApiProperty({example:1,description:'Первое число'})
     @IsNumberString()
     x: number;
 
-    @ApiProperty()
+    @ApiProperty({example:3,description:'Второе число'})
     @IsNumberString()
     y: number;
 }

@@ -1,18 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CategoriesService } from './categories.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { CommentsEntity } from '../../entities/comments.entity';
+import { CategoriesEntity } from '../../entities/category.entity';
 
 describe('CategoriesService', () => {
-  let service: CategoriesService;
+  let categoriesService: CategoriesService;
+ const mockCategoriesRepository={}
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CategoriesService],
+      providers: [CategoriesService,
+        {
+          provide: getRepositoryToken(CategoriesEntity),
+          useValue: mockCategoriesRepository,
+        },],
     }).compile();
 
-    service = module.get<CategoriesService>(CategoriesService);
+    categoriesService = module.get<CategoriesService>(CategoriesService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(categoriesService).toBeDefined();
   });
 });

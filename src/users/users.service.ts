@@ -20,7 +20,7 @@ export class UsersService {
     user.lastName= createUserDto.lastName;
     user.email= createUserDto.email;
     user.password= createUserDto.password;
-    user.cover = createUserDto.cover;
+    user.cover = createUserDto.cover||'https://termosfera.su/wp-content/uploads/2022/04/2816616767_vubrbej.jpg';
     user.roles= createUserDto.role;
     user.password = await hash(user.password);
     user.createdAt= new Date();

@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  Get, HttpException, HttpStatus,
+  Get,
   Param,
   Patch,
   Post,
@@ -11,29 +11,27 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateCommentDto } from '../../dto/create-comment.dto';
 import { UpdateCommentDto } from '../../dto/update-comment.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { HelperFileLoad } from '../../utils/HelperFileLoad';
 import { CommentsEntity } from '../../entities/comments.entity';
-import { WsJwtGuard } from '../../auth/ws-jwt.guard';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { UsersService } from '../../users/users.service';
 
 const PATH_NEWS = '/static/';
 HelperFileLoad.path = PATH_NEWS;
 
+@ApiTags('comments')
 @Controller('comments')
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService,
-              private readonly usersService: UsersService) {
+  constructor(private readonly commentsService: CommentsService) {
   }
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiTags('comments')
+  @ApiOperation({summary:'Create new comment'})
   @ApiBody({ type: CreateCommentDto })
   @ApiResponse({
     status: 201,
@@ -46,7 +44,7 @@ export class CommentsController {
       filename: HelperFileLoad.customFileName,
     }),
   }))
-  async create(@Body() createCommentDto: CreateCommentDto, @Req() req, @UploadedFile()cover: Express.Multer.File):Promise<CommentsEntity>{
+  async create(@Body() createCommentDto: CreateCommentDto, @Req() req, @UploadedFile()cover: Express.Multer.File=null):Promise<CommentsEntity>{
     const userId=req.user.userId;
     if (cover?.filename) {
       createCommentDto.cover = PATH_NEWS + cover.filename;
@@ -59,7 +57,7 @@ export class CommentsController {
 
 
   @Get('/:newsId')
-  @ApiTags('comments')
+  @ApiOperation({summary:'Get all comments by news id'})
   @ApiResponse({
     status: 200,
     description: 'get all comments by news id',
@@ -72,7 +70,7 @@ export class CommentsController {
 
 
   @Get('/all/:newsId')
-  @ApiTags('comments')
+  @ApiOperation({summary:'Render all comments by news id'})
   @ApiResponse({
     status: 200,
     description: 'render all comments by news id'
@@ -87,7 +85,7 @@ export class CommentsController {
   }
 
   @Get('/:newsId/:commentId')
-  @ApiTags('comments')
+  @ApiOperation({summary:'Get comment by newsId and commentId'})
   @ApiResponse({
     status: 200,
     description: 'get comment by newsId and commentId',
@@ -98,7 +96,7 @@ export class CommentsController {
   }
 
   @Patch('/:commentId')
-  @ApiTags('comments')
+  @ApiOperation({summary:'Update comment'})
   @ApiBody({ type: UpdateCommentDto })
   @ApiResponse({
     status: 200,
@@ -111,22 +109,14 @@ export class CommentsController {
 
   @Delete('/:commentId')
   @UseGuards(JwtAuthGuard)
-  @ApiTags('comments')
+  @ApiOperation({summary:'Delete comment'})
   @ApiResponse({
     status: 200,
     description: 'delete comment',
-    type: CommentsEntity
+    type: [CommentsEntity]
   })
-  async remove(@Param('commentId') commentId: number,@Req() req):Promise<CommentsEntity> {
+  async remove(@Param('commentId') commentId: number,@Req() req):Promise<CommentsEntity[]> {
     const userId=req.user.userId;
-    const _comment=await this.commentsService.findOne(commentId);
-    const _user=await this.usersService.getUserById(userId);
-    if(_comment.user.id==userId||_user.roles==='admin'){
-      return await this.commentsService.remove(commentId);
-    } else{
-      throw new HttpException(
-        'Нет прав для операции', HttpStatus.FORBIDDEN,
-      );
-    }
+    return await this.commentsService.remove(commentId,userId);
   }
 }

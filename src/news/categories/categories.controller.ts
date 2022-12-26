@@ -2,14 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from '../../dto/create-category.dto';
 import { UpdateCategoryDto } from '../../dto/update-category.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UpdateCommentDto } from '../../dto/update-comment.dto';
-import { CommentsEntity } from '../../entities/comments.entity';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CategoriesEntity } from '../../entities/category.entity';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { Roles } from '../../auth/role/roles.decorator';
-import { Role } from '../../auth/role/role.enum';
+import { NewsEntity } from '../../entities/news.entity';
 
+@ApiTags('categories')
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
@@ -17,7 +14,7 @@ export class CategoriesController {
   @Post()
   // @UseGuards(JwtAuthGuard)
   // @Roles(Role.Admin)
-  @ApiTags('categories')
+  @ApiOperation({summary:'Create category'})
   @ApiBody({ type: CreateCategoryDto })
   @ApiResponse({
     status: 201,
@@ -31,7 +28,7 @@ export class CategoriesController {
   }
 
   @Get()
-  @ApiTags('categories')
+  @ApiOperation({summary:'Get all categories'})
   @ApiResponse({
     status: 200,
     description: 'get all categories',
@@ -42,7 +39,7 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  @ApiTags('categories')
+  @ApiOperation({summary:'Get category by id'})
   @ApiResponse({
     status: 200,
     description: 'get category by id',
@@ -53,7 +50,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
-  @ApiTags('categories')
+  @ApiOperation({summary:'Update category'})
   @ApiBody({ type: UpdateCategoryDto })
   @ApiResponse({
     status: 200,
@@ -65,7 +62,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  @ApiTags('categories')
+  @ApiOperation({summary:'Remove category'})
   @ApiResponse({
     status: 200,
     description: 'remove category',

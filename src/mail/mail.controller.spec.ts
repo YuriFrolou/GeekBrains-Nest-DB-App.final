@@ -1,18 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MailController } from './mail.controller';
+import { MailService } from './mail.service';
+import { MailerModule, MailerService } from '@nestjs-modules/mailer';
 
 describe('MailController', () => {
-  let controller: MailController;
+  let mailController: MailController;
+  const mockMailService={}
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MailController],
-    }).compile();
+      providers:[MailService]
+    }).overrideProvider(MailService).useValue(mockMailService).compile();
 
-    controller = module.get<MailController>(MailController);
+    mailController = module.get<MailController>(MailController);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(mailController).toBeDefined();
   });
 });
