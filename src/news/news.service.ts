@@ -64,13 +64,6 @@ export class NewsService {
         id,
       },
       relations: ['comments','user','comments.user'],
-      // join: {
-      //   alias: 'news',
-      //   leftJoinAndSelect: {
-      //     comments: 'news.comments',
-      //     user:'news.user'
-      //   },
-      // },
     });
 
     if (!news) {

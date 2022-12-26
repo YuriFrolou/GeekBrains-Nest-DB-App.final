@@ -19,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/role/roles.guard';
 import { SessionEntity } from './entities/session.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 // @ts-ignore
 @Module({
@@ -42,7 +43,8 @@ import { SessionEntity } from './entities/session.entity';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
-    AuthModule],
+    AuthModule,EventEmitterModule.forRoot()
+  ],
   controllers: [AppController],
   providers: [AppService,{
     provide: APP_GUARD, useClass: RolesGuard,

@@ -1,7 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { UsersEntity } from './users.entity';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsOptional, IsString } from 'class-validator';
 import { NewsEntity } from './news.entity';
 
 @Entity('comments')
@@ -11,8 +9,6 @@ export class CommentsEntity {
   @Column('text')
   message: string;
 
-  @Column('text')
-  cover?: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
